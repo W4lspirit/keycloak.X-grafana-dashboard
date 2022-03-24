@@ -1,3 +1,58 @@
+# This is a Fork
+Tested with keycloak.X (Quarkus) nightly (>17.0.1) on 2022/03/24
+
+https://quay.io/repository/keycloak/keycloak/manifest/sha256:b3afdc791b3d0d23b34353d44bd09cdceb933deb921dec7da30420334d48c616
+
+I'm deploying it on kubernetes, with a customized [helm chart](https://github.com/W4lspirit/helm-charts/tree/poc/keycloakx)
+
+```dockerfile
+FROM quay.io/keycloak/keycloak:nightly as builder
+
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_DB=postgres
+RUN /opt/keycloak/bin/kc.sh build --transaction-xa-enabled=false --cache-stack=kubernetes --health-enabled=true
+
+FROM quay.io/keycloak/keycloak:nightly
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
+WORKDIR /opt/keycloak
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
+```
+
+I'm using Azure Database for PostgreSQL, it does not support distributed transaction, so I have disabled it `--transaction-xa-enabled=false` (It's only possible at build time atm).
+
+# Datasource selection
+If you have multiple datasource(1 prom/env) you can configure it in the regex field.
+
+For this exemple with suppose the naming scheme is
+prometheus-k8s-xxxx-team-env-region
+```json
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 1,
+        "includeAll": false,
+        "multi": false,
+        "name": "PROMETHEUS_DS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "/prometheus-k8s-.*-team-./",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+```
+
+```
+Orignal readme below
+         |
+         |
+         v
+```
 # keycloak.X-grafana-dashboard
 
 ## Description
