@@ -20,7 +20,7 @@ WORKDIR /opt/keycloak
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
 ```
 
-I'm using Azure Database for PostgreSQL, it does not support distributed transaction, so I have disabled it `--transaction-xa-enabled=false` (It's only possible at build time atm).
+I'm using Azure Database for PostgreSQL, it does not support distributed transaction, so I have disabled it `--transaction-xa-enabled=false` (It's only possible at build time https://github.com/keycloak/keycloak/pull/10378).
 
 # Datasource selection
 If you have multiple datasource(1 prom/env) you can configure it in the regex field.
